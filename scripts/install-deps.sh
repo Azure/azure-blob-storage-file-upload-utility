@@ -37,6 +37,8 @@ use_ssh=false
 
 # Utility Deps
 install_abs_file_upload_utility_deps=false
+
+skip_azure_iot_sdk_install=false
 install_azure_iot_sdk=false
 azure_sdk_ref=main
 
@@ -57,6 +59,8 @@ print_help() {
     echo "--install-azure-blob-storage-deps  Install dependencies for the Azure Blob Storage Utility"
     echo "                                   Implies --install-azure-iot-sdk, --install-azure-storage-sdk, and --install-catch2."
     echo "                                   When used with --install-packages will also install the package dependencies."
+    echo "--skip-azure-iot-sdk-install Skips the installation of the Azure IoT C SDK."
+    echo "                             Used when the caller knows the Azure IoT C SDK has already been installed."
     echo "--install-azure-iot-sdk   Install the Azure IoT C SDK from source."
     echo "--azure-iot-sdk-ref <ref> Install the Azure IoT C SDK from a specific branch or tag."
     echo "                          Default is public-preview."
@@ -189,7 +193,7 @@ do_install_azure_storage_sdk() {
     else
         azure_cpp_lite_cmake_options+=("-DCMAKE_BUILD_TYPE:STRING=Release")
     fi
-
+    
     wget https://cmake.org/files/v3.15/cmake-3.15.7-Linux-x86_64.tar.gz  > /dev/null
     tar -zxvf cmake-3.15.7-Linux-x86_64.tar.gz > /dev/null
     
@@ -249,6 +253,10 @@ while [[ $1 != "" ]]; do
         shift
         azure_sdk_ref=$1
         ;;
+    --skip-azure-iot-sdk-install)
+        shift
+        skip_azure_iot_sdk_install=true
+        ;;
     --install-azure-storage-sdk)
         shift
         install_azure_storage_sdk=true
@@ -304,6 +312,12 @@ fi
 
 # Set implied options for aduc deps.
 if [[ $install_abs_file_upload_utility_deps == "true" ]]; then
+
+    if [[ $skip_azure_iot_sdk_install == "true" ]]; then
+        install_azure_iot_sdk=false
+    else
+        install_azure_iot_sdk=true
+    fi
     install_azure_iot_sdk=true
     install_azure_storage_sdk=true
 fi

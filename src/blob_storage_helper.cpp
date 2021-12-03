@@ -84,7 +84,7 @@ bool AzureBlobStorageHelper::UploadFilesToContainer(
         auto fileNameHandle = static_cast<const STRING_HANDLE*>(VECTOR_element(fileNames, i));
         const char* fileName = STRING_c_str(*fileNameHandle);
 
-        std::string filePath = nullptr;
+        std::string filePath;
 
         try
         {
