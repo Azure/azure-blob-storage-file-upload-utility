@@ -1,24 +1,21 @@
 # Project
 
-> This repo has been populated by an initial template to help get you started. Please
-> make sure to update the content to build a great experience for community-building.
+This project is a wrapper utility for the Azure SDK for Cpp's Storage SDK for use in [DeviceUpdate in IotHub](https://github.com/azure/iot-hub-device-update). It provides the functions necessary to upload files passed to the utility to an Azure Blob Storage account using a SAS url by exposing a C interface. 
 
-As the maintainer of this project, please make a few updates:
+For more information on DeviceUpdate for IotHub please checkout the link to the GitHub repository above or the official Microsoft Docs page [here](https://docs.microsoft.com/en-us/azure/iot-hub-device-update/). 
 
-- Improving this README.MD file to provide a great experience
-- Updating SUPPORT.MD with content about this project's support experience
-- Understanding the security reporting process in SECURITY.MD
-- Remove this section from the README
+This project has been tested on the following platforms on the x86_64, arm32, and arm64 architectures: 
+
+* Ubuntu 18.04 
+* Ubuntu 20.04 
+* Debian 9 
+* Debian 10
+* Raspbian
+* Yocto
 
 ## Contributing
 
-This project welcomes contributions and suggestions.  Most contributions require you to agree to a
-Contributor License Agreement (CLA) declaring that you have the right to, and actually do, grant us
-the rights to use your contribution. For details, visit https://cla.opensource.microsoft.com.
-
-When you submit a pull request, a CLA bot will automatically determine whether you need to provide
-a CLA and decorate the PR appropriately (e.g., status check, comment). Simply follow the instructions
-provided by the bot. You will only need to do this once across all repos using our CLA.
+This project is not currently accepting contributions. If you would like to contact the owner about the current state and/if a feature will be added please create an issue and one of our team members will get back to you.
 
 This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/).
 For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or
