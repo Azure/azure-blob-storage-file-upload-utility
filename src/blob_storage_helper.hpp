@@ -9,7 +9,7 @@
 // Note: This is just the top level portion
 #include <azure/storage/blobs.hpp>
 #include <azure_c_shared_utility/vector.h>
-#include <string.h>
+#include <string>
 #include <vector>
 
 #ifndef BLOB_STORAGE_HELPER_HPP
