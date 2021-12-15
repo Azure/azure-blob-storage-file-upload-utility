@@ -9,14 +9,12 @@ set (CMAKE_C_STANDARD 99)
 set (CMAKE_CXX_STANDARD 14)
 
 find_package (azure_c_shared_utility REQUIRED)
-message(STATUS "CURL_FOUND=${CURL_FOUND}")
-
-# set (CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/")
 
 find_package(CURL REQUIRED)
 
 find_package(azure-storage-blobs-cpp CONFIG REQUIRED)
 
+find_package(CURL REQUIRED)
 if (NOT TARGET CURL::libcurl)
     if(CURL_INCLUDE_DIR)
         foreach(_curl_version_header curlver.h curl.h)
@@ -46,13 +44,9 @@ if (NOT TARGET CURL::libcurl)
                             IMPORTED_LOCATION_RELEASE "${CURL_LIBRARY_RELEASE}")
 endif()
 
-message(STATUS "CURL_FOUND=${CURL_FOUND}")
-
 include_directories(${CURL_INCLUDE_DIRS})
 
 set(${library_name}_target_libs ${azure_blob_storage_file_upload_utility_target_libs} ${CURL_LIBRARIES})
-
-# add_library( CURL::libcurl IMPORT ${CURL_LIBRARIES})
 
 add_library (${library_name} STATIC src/azure_blob_storage_file_upload_utility.cpp src/blob_storage_helper.hpp
                                    src/blob_storage_helper.cpp)
