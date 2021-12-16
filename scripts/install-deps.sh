@@ -186,24 +186,46 @@ do_install_azure_storage_sdk() {
     mkdir cmake || return
     pushd cmake > /dev/null
 
-    local azure_cpp_lite_cmake_options
+    local azure_blob_storage_file_upload_utility_cmake_options
     if [[ $keep_source_code == "true" ]]; then
         # If source is wanted, presumably samples and symbols are useful as well.
-        azure_cpp_lite_cmake_options+=("-DCMAKE_BUILD_TYPE:STRING=Debug")
+        azure_blob_storage_file_upload_utility_cmake_options+=("-DCMAKE_BUILD_TYPE:STRING=Debug")
     else
-        azure_cpp_lite_cmake_options+=("-DCMAKE_BUILD_TYPE:STRING=Release")
+        azure_blob_storage_file_upload_utility_cmake_options+=("-DCMAKE_BUILD_TYPE:STRING=Release")
     fi
     
-    wget https://cmake.org/files/v3.15/cmake-3.15.7-Linux-x86_64.tar.gz  > /dev/null
-    tar -zxvf cmake-3.15.7-Linux-x86_64.tar.gz > /dev/null
+    local architecture 
+    architecture=`uname -m`
+    echo "${architecture}"
+    local cmake_url
+    local cmake_tar_path
+    local cmake_dir_path
+    if [[ "${architecture}" == "x86_64" ]]; then
+        echo "Detected x86_64 architecture"
+        cmake_url="https://cmake.org/files/v3.19/cmake-3.19.8-Linux-x86_64.tar.gz"
+        cmake_tar_path="./cmake-3.19.8-Linux-x86_64.tar.gz"
+        cmake_dir_path="./cmake-3.19.8-Linux-x86_64/"
+    elif [ "${architecture}" == "aarch64" ]; then
+        echo "Detected aarch64 architecture"
+        cmake_url="https://cmake.org/files/v3.19/cmake-3.19.8-Linux-aarch64.tar.gz"
+        cmake_tar_path="./cmake-3.19.8-Linux-aarch64.tar.gz"
+        cmake_dir_path="./cmake-3.19.8-Linux-aarch64/"
+    else
+        echo "Unsupported architecture."
+        exit 1
+    fi
+
+    wget ${cmake_url}  > /dev/null
+    tar -zxvf ${cmake_tar_path} > /dev/null
     
-    ./cmake-3.15.7-Linux-x86_64/bin/cmake "${azure_cpp_lite_cmake_options[@]}" .. || return
+    ${cmake_dir_path}/bin/cmake "${azure_blob_storage_file_upload_utility_cmake_options[@]}" .. || return
 
-    ./cmake-3.15.7-Linux-x86_64/bin/cmake --build . || return
-    $SUDO ./cmake-3.15.7-Linux-x86_64/bin/cmake --build . --target install || return
+    ${cmake_dir_path}/bin/cmake --build . || return
+    $SUDO ${cmake_dir_path}/bin/cmake --build . --target install || return
 
-    rm -fr ./cmake-3.15.7-Linux-x86_64/
-    rm -fr ./cmake-3.15.7-Linux-x86_64.tar.gz
+    rm -fr ${cmake_dir_path}
+    rm -fr ${cmake_tar_path}
+
     popd > /dev/null
     popd > /dev/null
 
@@ -343,9 +365,9 @@ fi
 
 # Install dependencies from source
 if [[ $install_packages_only == "false" ]]; then
-    if [[ $install_azure_iot_sdk == "true" ]]; then
-        do_install_azure_iot_sdk || $ret
-    fi
+    # if [[ $install_azure_iot_sdk == "true" ]]; then
+    #     do_install_azure_iot_sdk || $ret
+    # fi
 
     if [[ $install_azure_storage_sdk == "true" ]]; then
         do_install_azure_storage_sdk || $ret
