@@ -91,9 +91,9 @@ do_install_abs_file_upload_utility_deps() {
     # building for Debian, otherwise we install gcc-8 for Ubuntu.
     OS=$(lsb_release --short --id)
     if [[ $OS == "Debian" ]]; then
-        $SUDO apt-get install --yes gcc-6 g++-6 || return
-    else
         $SUDO apt-get install --yes gcc-8 g++-8 || return
+    else
+        $SUDO apt-get install --yes gcc-6 g++-6 || return
     fi
 
     # The following is a workaround as IoT SDK references the following paths which don't exist
