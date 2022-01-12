@@ -46,7 +46,7 @@ install_azure_storage_sdk=false
 azure_storage_sdk_ref=main
 
 # Dependencies packages
-abs_utils_packages=('git' 'make' 'snap' 'build-essential' 'ninja-build' 'libcurl4-openssl-dev' 'uuid-dev' 'libssl-dev' 'lsb-release' 'curl' 'libxml2-dev')
+abs_utils_packages=('git' 'make' 'snap' 'build-essential' 'ninja-build' 'libcurl4-openssl-dev' 'uuid-dev' 'libssl-dev' 'lsb-release' 'curl' 'libxml2-dev' 'wget')
 compiler_packages=("gcc-[68]")
 
 print_help() {
@@ -87,13 +87,13 @@ do_install_abs_file_upload_utility_deps() {
 
     $SUDO apt-get install --yes "${abs_utils_packages[@]}" || return
 
-    # The latest version of gcc available on Debian is gcc-6. We install that version if we are
-    # building for Debian, otherwise we install gcc-8 for Ubuntu.
+    # The latest version of gcc available on Debian is gcc-8. We install that version if we are
+    # building for Debian, otherwise we install gcc-6 for Ubuntu.
     OS=$(lsb_release --short --id)
     if [[ $OS == "Debian" ]]; then
-        $SUDO apt-get install --yes gcc-6 g++-6 || return
-    else
         $SUDO apt-get install --yes gcc-8 g++-8 || return
+    else
+        $SUDO apt-get install --yes gcc-6 g++-6 || return
     fi
 
     # The following is a workaround as IoT SDK references the following paths which don't exist
@@ -200,23 +200,41 @@ do_install_azure_storage_sdk() {
     local cmake_url
     local cmake_tar_path
     local cmake_dir_path
+    local cmake_build_from_source=false
     if [[ "${architecture}" == "x86_64" ]]; then
         echo "Detected x86_64 architecture"
+        echo "Attempting to use existing binary for CMake"
         cmake_url="https://cmake.org/files/v3.19/cmake-3.19.8-Linux-x86_64.tar.gz"
         cmake_tar_path="./cmake-3.19.8-Linux-x86_64.tar.gz"
         cmake_dir_path="./cmake-3.19.8-Linux-x86_64/"
+        cmake_build_from_source=false
     elif [ "${architecture}" == "aarch64" ]; then
         echo "Detected aarch64 architecture"
+        echo "Attempting to use existing binary for CMake"
         cmake_url="https://cmake.org/files/v3.19/cmake-3.19.8-Linux-aarch64.tar.gz"
         cmake_tar_path="./cmake-3.19.8-Linux-aarch64.tar.gz"
         cmake_dir_path="./cmake-3.19.8-Linux-aarch64/"
+        cmake_build_from_source=false
     else
-        echo "Unsupported architecture."
+        echo "Unknown architecture... assuming most likely arm32hf"
+        echo "Attempting to build CMake from source"
+        cmake_url="https://cmake.org/files/v3.21/cmake-3.21.4.tar.gz"
+        cmake_tar_path="./cmake-3.21.4.tar.gz"
+        cmake_dir_path="./cmake-3.21.4/"
+        cmake_build_from_source=true
         exit 1
     fi
 
     wget ${cmake_url}  > /dev/null
     tar -zxvf ${cmake_tar_path} > /dev/null
+
+    if [[ $cmake_build_from_source == "true"  ]]; then
+        echo "Building CMake from source."
+        pushd $cmake_dir_path > /dev/null
+        ./bootstrap > /dev/null  
+        make > /dev/null
+        popd > /dev/null   
+    fi
     
     ${cmake_dir_path}/bin/cmake "${azure_blob_storage_file_upload_utility_cmake_options[@]}" .. || return
 
