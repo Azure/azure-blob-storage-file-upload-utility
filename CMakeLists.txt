@@ -58,7 +58,8 @@ target_include_directories (${library_name} PUBLIC inc)
 
 target_link_libraries (
     ${library_name}
-    PRIVATE aziotsharedutil Azure::azure-storage-blobs Azure::azure-core ${azure_blob_storage_file_upload_utility_target_libs})
+    PUBLIC aziotsharedutil
+    PRIVATE  Azure::azure-storage-blobs Azure::azure-core ${azure_blob_storage_file_upload_utility_target_libs})
 
 set(AZURE_BLOB_STORAGE_UTILITY_VERSION_MAJOR 0)
 set(AZURE_BLOB_STORAGE_UTILITY_VERSION_MINOR 1)
