@@ -216,7 +216,7 @@ do_install_azure_storage_sdk() {
         cmake_dir_path="./cmake-3.19.8-Linux-aarch64/"
         cmake_build_from_source=false
     else
-        echo "Unknown architecture... assuming most likely arm32hf"
+        echo "Unknown architecture... Attempting to build from source"
         echo "Attempting to build CMake from source"
         cmake_url="https://cmake.org/files/v3.21/cmake-3.21.4.tar.gz"
         cmake_tar_path="./cmake-3.21.4.tar.gz"
