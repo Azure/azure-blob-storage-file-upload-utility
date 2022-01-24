@@ -351,7 +351,6 @@ if [[ $install_abs_file_upload_utility_deps == "true" ]]; then
     else
         install_azure_iot_sdk=true
     fi
-    install_azure_iot_sdk=true
     install_azure_storage_sdk=true
 fi
 
@@ -376,9 +375,9 @@ fi
 
 # Install dependencies from source
 if [[ $install_packages_only == "false" ]]; then
-    # if [[ $install_azure_iot_sdk == "true" ]]; then
-    #     do_install_azure_iot_sdk || $ret
-    # fi
+    if [[ $install_azure_iot_sdk == "true" ]]; then
+        do_install_azure_iot_sdk || $ret
+    fi
 
     if [[ $install_azure_storage_sdk == "true" ]]; then
         do_install_azure_storage_sdk || $ret
