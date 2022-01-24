@@ -87,14 +87,7 @@ do_install_abs_file_upload_utility_deps() {
 
     $SUDO apt-get install --yes "${abs_utils_packages[@]}" || return
 
-    # The latest version of gcc available on Debian is gcc-8. We install that version if we are
-    # building for Debian, otherwise we install gcc-6 for Ubuntu.
-    OS=$(lsb_release --short --id)
-    if [[ $OS == "Debian" ]]; then
-        $SUDO apt-get install --yes gcc-8 g++-8 || return
-    else
-        $SUDO apt-get install --yes gcc-6 g++-6 || return
-    fi
+    $SUDO apt-get install --yes gcc-8 g++-8 || return
 
     # The following is a workaround as IoT SDK references the following paths which don't exist
     # on our target platforms, and without these folders existing, static analysis will report:
