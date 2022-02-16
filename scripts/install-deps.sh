@@ -47,7 +47,7 @@ azure_storage_sdk_ref=main
 
 # Dependencies packages
 abs_utils_packages=('git' 'make' 'snap' 'build-essential' 'ninja-build' 'libcurl4-openssl-dev' 'uuid-dev' 'libssl-dev' 'lsb-release' 'curl' 'libxml2-dev' 'wget')
-compiler_packages=("gcc-[68]")
+compiler_packages=("gcc-6")
 
 print_help() {
     echo "Usage: install-deps.sh [options...]"
@@ -87,7 +87,7 @@ do_install_abs_file_upload_utility_deps() {
 
     $SUDO apt-get install --yes "${abs_utils_packages[@]}" || return
 
-    $SUDO apt-get install --yes gcc-8 g++-8 || return
+    $SUDO apt-get install --yes gcc-6 g++-6 || return
 
     # The following is a workaround as IoT SDK references the following paths which don't exist
     # on our target platforms, and without these folders existing, static analysis will report:
@@ -215,16 +215,15 @@ do_install_azure_storage_sdk() {
         cmake_tar_path="./cmake-3.21.4.tar.gz"
         cmake_dir_path="./cmake-3.21.4/"
         cmake_build_from_source=true
-        exit 1
     fi
 
-    wget ${cmake_url}  > /dev/null
-    tar -zxvf ${cmake_tar_path} > /dev/null
+    wget ${cmake_url}  
+    tar -zxvf ${cmake_tar_path} 
 
     if [[ $cmake_build_from_source == "true"  ]]; then
         echo "Building CMake from source."
         pushd $cmake_dir_path > /dev/null
-        ./bootstrap > /dev/null  
+        ./bootstrap  
         make > /dev/null
         popd > /dev/null   
     fi
