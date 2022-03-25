@@ -47,7 +47,7 @@ azure_storage_sdk_ref=main
 
 # Dependencies packages
 abs_utils_packages=('git' 'make' 'snap' 'build-essential' 'ninja-build' 'libcurl4-openssl-dev' 'uuid-dev' 'libssl-dev' 'lsb-release' 'curl' 'libxml2-dev' 'wget')
-compiler_packages=("gcc-6")
+compiler_packages=("gcc-8")
 
 print_help() {
     echo "Usage: install-deps.sh [options...]"
@@ -87,7 +87,7 @@ do_install_abs_file_upload_utility_deps() {
 
     $SUDO apt-get install --yes "${abs_utils_packages[@]}" || return
 
-    $SUDO apt-get install --yes gcc-6 g++-6 || return
+    $SUDO apt-get install --yes gcc-8 g++-8 || return
 
     # The following is a workaround as IoT SDK references the following paths which don't exist
     # on our target platforms, and without these folders existing, static analysis will report:
