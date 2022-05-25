@@ -43,7 +43,8 @@ install_azure_iot_sdk=false
 azure_sdk_ref=main
 
 install_azure_storage_sdk=false
-azure_storage_sdk_ref=main
+azure_storage_sdk_branch_ref=main
+azure_storage_sdk_tag_ref=azure-core_1.6.0
 
 # Dependencies packages
 abs_utils_packages=('git' 'make' 'snap' 'build-essential' 'ninja-build' 'libcurl4-openssl-dev' 'uuid-dev' 'libssl-dev' 'lsb-release' 'curl' 'libxml2-dev' 'wget')
@@ -170,11 +171,12 @@ do_install_azure_storage_sdk() {
         azure_storage_sdk_url=https://github.com/Azure/azure-sdk-for-cpp.git
     fi
     
-    echo -e "Building Azure Storage SDK ...\n\tBranch: $azure_storage_sdk_ref\n\t Folder: $azure_storage_sdk_dir"
+    echo -e "Building Azure Storage SDK ...\n\tBranch: $azure_storage_sdk_branch_ref\n\t Folder: $azure_storage_sdk_dir"
     mkdir -p $azure_storage_sdk_dir || return
     pushd $azure_storage_sdk_dir > /dev/null
-    git clone --recursive --single-branch --branch $azure_storage_sdk_ref --depth 1 $azure_storage_sdk_url . || return
+    git clone --recursive --single-branch --branch $azure_storage_sdk_branch_ref $azure_storage_sdk_url . || return
 
+    git checkout tags/$azure_storage_sdk_tag_ref
 
     mkdir cmake || return
     pushd cmake > /dev/null
