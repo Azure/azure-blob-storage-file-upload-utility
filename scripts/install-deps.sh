@@ -48,7 +48,6 @@ azure_storage_sdk_tag_ref=azure-core_1.6.0
 
 # Dependencies packages
 abs_utils_packages=('git' 'make' 'snap' 'build-essential' 'ninja-build' 'libcurl4-openssl-dev' 'uuid-dev' 'libssl-dev' 'lsb-release' 'curl' 'libxml2-dev' 'wget')
-compiler_packages=("gcc-8")
 
 print_help() {
     echo "Usage: install-deps.sh [options...]"
@@ -88,7 +87,11 @@ do_install_abs_file_upload_utility_deps() {
 
     $SUDO apt-get install --yes "${abs_utils_packages[@]}" || return
 
-    $SUDO apt-get install --yes gcc-8 g++-8 || return
+    if [[ "$distro" == "debian11" ]]; then
+        $SUDO apt-get install --yes gcc-10 g++-10 || return
+    else
+        $SUDO apt-get install --yes gcc-8 g++-8 || return
+    fi
 
     # The following is a workaround as IoT SDK references the following paths which don't exist
     # on our target platforms, and without these folders existing, static analysis will report:
@@ -246,6 +249,58 @@ do_install_azure_storage_sdk() {
     fi
 }
 
+determine_machine_architecture() {
+    local arch=''
+    arch="$(uname -m)"
+    local ret_val=$?
+    if [[ $ret_val != 0 ]]; then
+        error "Failed to get cpu architecture."
+        return 1
+    else
+        if [[ $arch == aarch64* || $arch == armv8* ]]; then
+            is_arm64=true
+        elif [[ $arch == armv7* || $arch == 'arm' ]]; then
+            is_arm32=true
+        elif [[ $arch == 'x86_64' || $arch == 'amd64' ]]; then
+            is_amd64=true
+        else
+            error "Machine architecture '$arch' is not supported."
+            return 1
+        fi
+    fi
+}
+
+determine_distro_and_arch() {
+    # Checking distro name and version
+    if [ -r /etc/os-release ]; then
+        # freedesktop.org and systemd
+        OS=$(grep "^ID\s*=\s*" /etc/os-release | sed -e "s/^ID\s*=\s*//")
+        VER=$(grep "^VERSION_ID=" /etc/os-release | sed -e "s/^VERSION_ID=//")
+        VER=$(sed -e 's/^"//' -e 's/"$//' <<< "$VER")
+    elif type lsb_release > /dev/null 2>&1; then
+        # linuxbase.org
+        OS=$(lsb_release -si)
+        VER=$(lsb_release -sr)
+    elif [ -f /etc/lsb-release ]; then
+        # For some versions of Debian/Ubuntu without lsb_release command
+        OS=$(grep DISTRIB_ID /etc/lsb-release | awk -F'=' '{ print $2 }')
+        VER=$(grep DISTRIB_RELEASE /etc/lsb-release | awk -F'=' '{ print $2 }')
+    elif [ -f /etc/debian_version ]; then
+        # Older Debian/Ubuntu/etc.
+        OS=Debian
+        VER=$(cat /etc/debian_version)
+    else
+        # Fall back to uname, e.g. "Linux <version>", also works for BSD, etc.
+        OS=$(uname -s)
+        VER=$(uname -r)
+    fi
+
+    # Convert OS to lowercase
+    OS="$(echo "$OS" | tr '[:upper:]' '[:lower:]')"
+
+    determine_machine_architecture || return 1
+}
+
 do_list_all_deps() {
     declare -a deps_set=()
     deps_set+=(${abs_utils_packages[@]})
@@ -330,6 +385,15 @@ while [[ $1 != "" ]]; do
     esac
     shift
 done
+
+# Get OS, VER, machine architecture for use in other parts of the script.
+determine_distro_and_arch
+distro=$OS$VER
+if [[ "$distro" == "debian11" ]]; then
+    compiler_packages=(gcc-10)
+else
+    compiler_packages=(gcc-8)
+fi
 
 # If there is no install action specified,
 # assume that we want to install all deps.
