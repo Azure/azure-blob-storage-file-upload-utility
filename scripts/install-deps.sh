@@ -87,7 +87,7 @@ do_install_abs_file_upload_utility_deps() {
 
     $SUDO apt-get install --yes "${abs_utils_packages[@]}" || return
 
-    if [[ "$distro" == "debian11" ]]; then
+if [[ "$distro" == "debian11" || "$distro" == "ubuntu22.04" ]]; then
         $SUDO apt-get install --yes gcc-10 g++-10 || return
     else
         $SUDO apt-get install --yes gcc-8 g++-8 || return
